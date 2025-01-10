@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Warehouse</title>
+</head>
+<body>
+    <h2>Edit Warehouse: {{ warehouse.name }}</h2>
+    
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        <button type="submit">Save Changes</button>
+    </form>
+    
+    <br>
+    <a href="{% url 'warehouse_list' %}">Back to Warehouse List</a>
+</body>
+</html>
+
