@@ -1,0 +1,22 @@
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Low Stock Warnings</title>
+</head>
+<body>
+    <h1>Low Stock Warnings</h1>
+    {% if low_stock_products %}
+        <ul>
+            {% for warning in low_stock_products %}
+                <li>{{ warning }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No products are running low on stock.</p>
+    {% endif %}
+</body>
+</html>

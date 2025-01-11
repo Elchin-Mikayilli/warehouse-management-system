@@ -38,12 +38,12 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'core.urls'
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR / 'core/templates',  # Add this line to include core templates folder
+            BASE_DIR / 'core/templates',  # Keep core templates folder if needed
+            BASE_DIR / 'inventory/templates',  # Add inventory templates folder
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -56,7 +56,6 @@ TEMPLATES = [
         },
     },
 ]
-
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
@@ -106,4 +105,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # settings.py
+LOGIN_REDIRECT_URL = '/'  # After login, redirect to the home page
 LOGIN_REDIRECT_URL = '/inventory/warehouses/'  # Redirect to warehouse list after login or registration

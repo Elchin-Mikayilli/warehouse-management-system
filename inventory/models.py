@@ -1,9 +1,10 @@
-# inventory/models.py
 
+
+#inventory.models
 from django.db import models
 from django.contrib.auth.models import User
 
-# Warehouse model (already defined)
+# Warehouse model (depends on Users)
 class Warehouse(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='warehouses')
     name = models.CharField(max_length=255)
@@ -33,26 +34,32 @@ class Warehouse(models.Model):
     def __str__(self):
         return f"{self.name} (Owned by {self.user.username})"
 
-    def get_status_display(self):
-        return dict(self.status.choices).get(self.status, 'Unknown')
+    # No need for the custom methods for `get_status_display` and `get_warehouse_type_display`
+    # Django already handles this for you automatically.
 
-    def get_warehouse_type_display(self):
-        return dict(self.warehouse_type.choices).get(self.warehouse_type, 'Unknown')
-
-
-# Product model depends on Warehouse
+# Product model (depends on Warehouse)
 class Product(models.Model):
     warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE, related_name='products')
     name = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    stock_quantity = models.PositiveIntegerField()  # Number of products in stock
+    stock_quantity = models.PositiveIntegerField()  # Initial stock quantity
+    stock_threshold = models.PositiveIntegerField(default=20)  # Low stock threshold
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
 
+    def check_stock_warning(self):
+        """
+        Checks if the product stock is below the threshold and returns a warning message if true.
+        """
+        total_stock = sum(stock.quantity_added - stock.quantity_removed for stock in self.stock_movements.all())
+        if total_stock < self.stock_threshold:
+            return f"Warning: {self.name} stock is low. Only {total_stock} units left."
+        return None
 
-# Stock model depends on Product
+
+# Stock model (depends on Product)
 class Stock(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='stock_movements')
     quantity_added = models.PositiveIntegerField(default=0)  # Quantity added to stock

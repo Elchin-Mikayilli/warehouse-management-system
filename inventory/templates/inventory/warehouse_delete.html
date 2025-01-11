@@ -1,4 +1,6 @@
 
+
+<!-- warehouse_delete.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,9 +11,10 @@
 <body>
     <h2>Are you sure you want to delete the warehouse: {{ warehouse.name }}?</h2>
     
+    <!-- Form to confirm deletion -->
     <form method="POST">
         {% csrf_token %}
-        <button type="submit">Delete</button>
+        <button type="submit">Yes, Delete</button>
     </form>
     
     <br>

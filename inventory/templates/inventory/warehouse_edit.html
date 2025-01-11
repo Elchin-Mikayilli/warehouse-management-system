@@ -8,9 +8,42 @@
 <body>
     <h2>Edit Warehouse: {{ warehouse.name }}</h2>
     
+    <!-- Display form to edit warehouse details -->
     <form method="POST">
         {% csrf_token %}
-        {{ form.as_p }}
+        
+        <!-- Render the form fields dynamically with customized fields for choices -->
+        <div>
+            <label for="{{ form.name.id_for_label }}">Warehouse Name</label>
+            {{ form.name }}
+        </div>
+
+        <div>
+            <label for="{{ form.location.id_for_label }}">Location</label>
+            {{ form.location }}
+        </div>
+
+        <div>
+            <label for="{{ form.capacity.id_for_label }}">Capacity</label>
+            {{ form.capacity }}
+        </div>
+
+        <div>
+            <label for="{{ form.status.id_for_label }}">Status</label>
+            {{ form.status }}
+        </div>
+
+        <div>
+            <label for="{{ form.warehouse_type.id_for_label }}">Warehouse Type</label>
+            {{ form.warehouse_type }}
+        </div>
+
+        <div>
+            <label for="{{ form.last_updated.id_for_label }}">Last Updated</label>
+            {{ form.last_updated }}
+        </div>
+        
+        <!-- Show error messages for any invalid fields -->
         {% if form.errors %}
             <div class="alert alert-danger">
                 {% for field in form %}
@@ -20,6 +53,7 @@
                 {% endfor %}
             </div>
         {% endif %}
+        
         <button type="submit">Save Changes</button>
     </form>
     
@@ -27,4 +61,3 @@
     <a href="{% url 'warehouse_list' %}">Back to Warehouse List</a>
 </body>
 </html>
-

@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -91,14 +92,14 @@
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <a class="nav-link" href="/users/logout/">Logout</a>
+                            <a class="nav-link" href="{% url 'logout' %}">Logout</a> <!-- Use URL tag for logout -->
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="/users/login/">Login</a>
+                            <a class="nav-link" href="{% url 'login' %}">Login</a> <!-- Use URL tag for login -->
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/users/register/">Register</a>
+                            <a class="nav-link" href="{% url 'register' %}">Register</a> <!-- Use URL tag for register -->
                         </li>
                     {% endif %}
                 </ul>

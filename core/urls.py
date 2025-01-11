@@ -29,3 +29,4 @@ urlpatterns = [
     path('users/', include('users.urls')),  # Include users' URLs for login, register, etc.
     path('inventory/', include('inventory.urls')),  # Include inventory app URLs
 ]
+

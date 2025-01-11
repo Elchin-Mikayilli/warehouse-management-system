@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,21 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Warehouse List</title>
     <style>
-        /* Center the container */
         body {
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh; /* Full height */
+            min-height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
             background-color: #f4f4f9;
         }
 
         .container {
-            text-align: center; /* Center the text */
+            text-align: center;
             width: 100%;
-            max-width: 800px; /* Max width for the container */
+            max-width: 900px;
             padding: 20px;
             background-color: #ffffff;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -32,7 +29,6 @@
             margin-bottom: 20px;
         }
 
-        /* Center the search form and input */
         form {
             margin-bottom: 20px;
         }
@@ -58,7 +54,6 @@
             background-color: #0056b3;
         }
 
-        /* Style for the warehouse list */
         ul {
             list-style-type: none;
             padding: 0;
@@ -78,36 +73,79 @@
             text-decoration: underline;
         }
 
-        /* Center the Create New Warehouse link */
         .create-link {
             display: block;
             margin-top: 20px;
             font-weight: bold;
+        }
+
+        .warehouse-details {
+            font-size: 14px;
+            color: #777;
+        }
+
+        .warehouse-status {
+            padding: 3px 6px;
+            border-radius: 4px;
+            background-color: #f0f0f0;
+        }
+
+        .status-active {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .status-maintenance {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        .status-closed {
+            background-color: #dc3545;
+            color: white;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>List of Warehouses</h2>
-        
+
+        <!-- Search Form -->
         <form method="GET" action="">
-            <input type="text" name="search" value="{{ search_query }}" placeholder="Search warehouses">
+            <input type="text" name="search" value="{{ search_query }}" placeholder="Search warehouses by name or location">
             <button type="submit">Search</button>
         </form>
 
-        <ul>
-            {% for warehouse in warehouses %}
-                <li>
-                    <strong>{{ warehouse.name }}</strong> 
-                    (Created: {{ warehouse.created_at }} - 
-                    Location: {{ warehouse.location }} - 
-                    Status: {{ warehouse.get_status_display }})
-                    <a href="{% url 'warehouse_edit' warehouse.pk %}">Edit</a> | 
-                    <a href="{% url 'warehouse_delete' warehouse.pk %}">Delete</a>
-                </li>
-            {% endfor %}
-        </ul>
-        
+        <!-- Warehouse List -->
+        {% if warehouses %}
+            <ul>
+                {% for warehouse in warehouses %}
+                    <li>
+                        <strong>{{ warehouse.name }}</strong>
+                        <div class="warehouse-details">
+                            <span>Location: {{ warehouse.location }}</span> | 
+                            <span>Status: 
+                                <span class="warehouse-status 
+                                {% if warehouse.status == 'active' %}status-active{% endif %}
+                                {% if warehouse.status == 'maintenance' %}status-maintenance{% endif %}
+                                {% if warehouse.status == 'closed' %}status-closed{% endif %}">
+                                    {{ warehouse.get_status_display }}
+                                </span>
+                            </span>
+                        </div>
+                        <div>
+                            <a href="{% url 'warehouse_edit' warehouse.pk %}">Edit</a> | 
+                            <a href="{% url 'warehouse_delete' warehouse.pk %}">Delete</a> | 
+                            <a href="{% url 'product_create' warehouse.pk %}">Add Products</a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No warehouses found matching your search criteria.</p>
+        {% endif %}
+
+        <!-- Create New Warehouse Link -->
         <a href="{% url 'warehouse_create' %}" class="create-link">Create New Warehouse</a>
     </div>
 </body>
