@@ -14,7 +14,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']  # Added local development hosts
 
-
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -23,8 +22,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users.apps.UsersConfig',
-    'inventory.apps.InventoryConfig',
+    'users.apps.UsersConfig',  # Include your users app
+    'inventory.apps.InventoryConfig',  # Include your inventory app
 ]
 
 MIDDLEWARE = [
@@ -38,12 +37,12 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'core.urls'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR / 'core/templates',  # Keep core templates folder if needed
-            BASE_DIR / 'inventory/templates',  # Add inventory templates folder
+            BASE_DIR / 'core' / 'templates',  # Update the path to reflect 'core/templates'
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -57,17 +56,16 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'core.wsgi.application'
 
+WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database configuration
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'django.db.backends.sqlite3',  # Using SQLite for development
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -85,7 +83,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization settings
 LANGUAGE_CODE = 'en-us'
 
@@ -95,15 +92,12 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
-
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-# settings.py
-LOGIN_REDIRECT_URL = '/'  # After login, redirect to the home page
-LOGIN_REDIRECT_URL = '/inventory/warehouses/'  # Redirect to warehouse list after login or registration
+# Login and logout redirection
+LOGIN_REDIRECT_URL = '/inventory/warehouses/'  # Redirect to warehouse list after login
+LOGOUT_REDIRECT_URL = '/users/login/'  # Redirect to login page after logout

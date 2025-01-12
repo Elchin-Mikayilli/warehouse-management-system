@@ -1,6 +1,5 @@
 
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -91,16 +90,20 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
+                        <!-- If user is logged in, show logout -->
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'logout' %}">Logout</a> <!-- Use URL tag for logout -->
+                            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
                         </li>
                     {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">Login</a> <!-- Use URL tag for login -->
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'register' %}">Register</a> <!-- Use URL tag for register -->
-                        </li>
+                        <!-- If user is not logged in, show login/register on home, login, and register pages -->
+                        {% if request.path == '/' or request.path == '/login/' or request.path == '/register/' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'login' %}">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'register' %}">Register</a>
+                            </li>
+                        {% endif %}
                     {% endif %}
                 </ul>
             </div>

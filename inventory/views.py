@@ -1,6 +1,3 @@
-
-
-
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Warehouse, Product, Stock
 from .forms import WarehouseForm
@@ -30,6 +27,12 @@ def warehouse_create(request):
         status = request.POST.get('status')
         warehouse_type = request.POST.get('warehouse_type')
 
+        # Check if warehouse with the same name already exists
+        if Warehouse.objects.filter(user=request.user, name=name).exists():
+            messages.error(request, f'Warehouse with the name "{name}" already exists. Please choose a different name.')
+            return redirect('warehouse_create')  # Stay on the warehouse creation page
+
+        # Create the new warehouse
         warehouse = Warehouse.objects.create(
             user=request.user,
             name=name,
@@ -39,7 +42,9 @@ def warehouse_create(request):
             warehouse_type=warehouse_type
         )
         messages.success(request, f'You have successfully created the warehouse: {warehouse.name}')
-        return redirect('warehouse_detail', pk=warehouse.pk)
+        
+        # Redirect directly to the product creation page
+        return redirect('product_create', pk=warehouse.pk)
 
     return render(request, 'inventory/warehouse_create.html')
 
@@ -73,10 +78,9 @@ def warehouse_detail(request, pk):
                 product.stock_quantity -= quantity
             else:
                 messages.error(request, f"Not enough stock to remove for {product.name}.")
-
         product.save()
         messages.success(request, f'Stock updated for {product.name}.')
-
+    
     return render(request, 'inventory/warehouse_detail.html', {
         'warehouse': warehouse,
         'products': products,

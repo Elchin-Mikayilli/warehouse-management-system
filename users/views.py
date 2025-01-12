@@ -39,9 +39,12 @@
 
 
 # users/views.py
+# users/views.py
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import logout
 from .forms import RegistrationForm
 
 # User Login View
@@ -56,6 +59,11 @@ def user_login(request):
         form = AuthenticationForm()
     return render(request, 'users/login.html', {'form': form})
 
+# User Logout View
+def user_logout(request):
+    logout(request)
+    return redirect('login')  # Redirect to login page after logout
+
 # User Registration View
 def user_register(request):
     if request.method == 'POST':
@@ -67,6 +75,6 @@ def user_register(request):
         form = RegistrationForm()
     return render(request, 'users/register.html', {'form': form})
 
-# Home View (Updated)
+# Home View
 def home(request):
     return render(request, 'home.html')  # Render the home page template
