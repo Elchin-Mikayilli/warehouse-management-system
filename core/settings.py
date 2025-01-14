@@ -99,5 +99,6 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Login and logout redirection
+
 LOGIN_REDIRECT_URL = '/inventory/warehouses/'  # Redirect to warehouse list after login
 LOGOUT_REDIRECT_URL = '/users/login/'  # Redirect to login page after logout

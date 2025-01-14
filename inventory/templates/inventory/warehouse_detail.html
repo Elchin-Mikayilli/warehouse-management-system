@@ -171,31 +171,7 @@
             <p class="no-products">No products found in this warehouse.</p>
         {% endif %}
 
-        <h3>Add a New Product:</h3>
-        <form method="post" class="product-form">
-            {% csrf_token %}
-            <label for="name">Product Name:</label><br>
-            <input type="text" id="name" name="name" required><br><br>
-            
-            <label for="price">Price:</label><br>
-            <input type="number" id="price" name="price" step="0.01" required><br><br>
-            
-            <label for="stock_quantity">Stock Quantity:</label><br>
-            <input type="number" id="stock_quantity" name="stock_quantity" min="1" required><br><br>
-            
-            <button type="submit">Add Product</button>
-        </form>
-
-        <!-- Display success or error messages -->
-        {% if messages %}
-            <ul>
-                {% for message in messages %}
-                    <li class="success-message">{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
     </div>
 
 </body>
 </html>
-

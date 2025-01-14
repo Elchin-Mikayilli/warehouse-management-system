@@ -1,70 +1,96 @@
-
-
-#inventory.models
+import uuid
 from django.db import models
 from django.contrib.auth.models import User
 
-# Warehouse model (depends on Users)
+# ✅ Warehouse model
 class Warehouse(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='warehouses')
-    name = models.CharField(max_length=255)
-    created_at = models.DateTimeField(auto_now_add=True)
+    warehouse_code = models.UUIDField(
+        primary_key=True, 
+        default=uuid.uuid4, 
+        editable=False, 
+        unique=True
+    )
+    user = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        related_name='warehouses'
+    )
+    name = models.CharField(max_length=255, unique=True)
     location = models.CharField(max_length=255, blank=True, null=True)
-    capacity = models.PositiveIntegerField(blank=True, null=True)
     status = models.CharField(
         max_length=20,
         choices=[
             ('active', 'Active'),
             ('maintenance', 'Under Maintenance'),
-            ('closed', 'Closed')
+            ('closed', 'Closed'),
         ],
         default='active'
     )
     warehouse_type = models.CharField(
         max_length=50,
         choices=[
-            ('regular', 'Regular'),
-            ('refrigerated', 'Refrigerated'),
-            ('storage', 'Storage Only')
+            ('general', 'General'),
+            ('cold', 'Cold'),
         ],
-        default='regular'
+        default='general'
     )
+    created_at = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.name} (Owned by {self.user.username})"
+        return f"{self.name} (Owned by {self.user.username}, Status: {self.get_status_display()})"
 
-    # No need for the custom methods for `get_status_display` and `get_warehouse_type_display`
-    # Django already handles this for you automatically.
+    class Meta:
+        indexes = [
+            models.Index(fields=['user']),
+            models.Index(fields=['status']),
+        ]
+        verbose_name = "Warehouse"
+        verbose_name_plural = "Warehouses"
 
-# Product model (depends on Warehouse)
+
+# ✅ Product model
 class Product(models.Model):
-    warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE, related_name='products')
     name = models.CharField(max_length=255)
+    warehouse = models.ForeignKey(
+        Warehouse, 
+        on_delete=models.CASCADE, 
+        related_name='products'
+    )
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    stock_quantity = models.PositiveIntegerField()  # Initial stock quantity
-    stock_threshold = models.PositiveIntegerField(default=20)  # Low stock threshold
+    stock_quantity = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} ({self.warehouse.name})"
 
-    def check_stock_warning(self):
-        """
-        Checks if the product stock is below the threshold and returns a warning message if true.
-        """
-        total_stock = sum(stock.quantity_added - stock.quantity_removed for stock in self.stock_movements.all())
-        if total_stock < self.stock_threshold:
-            return f"Warning: {self.name} stock is low. Only {total_stock} units left."
-        return None
+    class Meta:
+        unique_together = ('name', 'warehouse')
+        indexes = [
+            models.Index(fields=['name', 'warehouse']),
+        ]
 
 
-# Stock model (depends on Product)
+# ✅ Stock model
 class Stock(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='stock_movements')
-    quantity_added = models.PositiveIntegerField(default=0)  # Quantity added to stock
-    quantity_removed = models.PositiveIntegerField(default=0)  # Quantity removed from stock
+    product = models.ForeignKey(
+        Product, 
+        on_delete=models.CASCADE, 
+        related_name='stocks'
+    )
+    quantity_added = models.PositiveIntegerField(default=0)
+    quantity_removed = models.PositiveIntegerField(default=0)
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Stock movement for {self.product.name} on {self.date}"
+        return f"Stock movement for {self.product.name} on {self.date.strftime('%Y-%m-%d')}"
+
+    def total_stock(self):
+        """Calculates the total stock by considering added and removed quantities."""
+        total = self.quantity_added - self.quantity_removed
+        return total
+
+    class Meta:
+        verbose_name = "Stock"
+        verbose_name_plural = "Stock Movements"
+        ordering = ['-date']
