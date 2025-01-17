@@ -1,6 +1,7 @@
 from django import forms
 from .models import Warehouse, Product
 
+
 class WarehouseForm(forms.ModelForm):
     class Meta:
         model = Warehouse
@@ -32,7 +33,19 @@ class WarehouseForm(forms.ModelForm):
         
         if user:
             self.instance.user = user  # Set the user for this warehouse instance if provided
-# ✅ Product Form (For Creating and Editing Products)
+
+    # Custom validation to prevent deleting warehouse if it contains products
+    def clean(self):
+        cleaned_data = super().clean()
+        warehouse = self.instance
+
+        if warehouse.pk:  # Only check if the warehouse exists in the database
+            if warehouse.products.exists():  # Use 'products' instead of 'product_set'
+                raise forms.ValidationError("Cannot delete this warehouse because it contains products.")
+        
+        return cleaned_data
+
+
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
@@ -49,6 +62,7 @@ class ProductForm(forms.ModelForm):
             raise forms.ValidationError('Please specify a valid stock quantity.')
         return stock_quantity
 
+
 # ✅ EditNameForm (For Editing Product Name)
 class EditNameForm(forms.ModelForm):
     class Meta:
@@ -58,6 +72,7 @@ class EditNameForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
+
 # ✅ EditPriceForm (For Editing Product Price)
 class EditPriceForm(forms.ModelForm):
     class Meta:
@@ -66,6 +81,7 @@ class EditPriceForm(forms.ModelForm):
         widgets = {
             'price': forms.NumberInput(attrs={'class': 'form-control'}),
         }
+
 
 # ✅ DeleteProductForm (For Deleting a Product)
 class DeleteProductForm(forms.ModelForm):
@@ -79,6 +95,7 @@ class DeleteProductForm(forms.ModelForm):
             required=True, label="Are you sure you want to delete this product?", 
             widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
         )
+
 
 # ✅ StockForm (For Managing Stock Quantity Actions in warehouse_detail)
 class StockForm(forms.ModelForm):

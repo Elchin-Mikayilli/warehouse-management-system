@@ -1,18 +1,92 @@
-{% extends 'base_generic.html' %}
 
-{% block content %}
-  <div class="container">
-    <h2>Delete Product</h2>
 
-    <!-- Confirmation message -->
-    <div class="alert alert-warning">
-      <p>Are you sure you want to delete the product <strong>{{ product.name }}</strong>?</p>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Product</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+        }
+        .top-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #add8e6; /* Light blue */
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: flex-end;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .top-bar a {
+            color: #0056b3; /* Dark blue for links */
+            text-decoration: none;
+            margin-left: 15px;
+            font-weight: bold;
+        }
+        .top-bar a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 500px; /* Increased width */
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #c9302c;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .cancel-link {
+            display: inline-block;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <a href="{% url 'logout' %}">Logout</a>
+        <a href="{% url 'warehouse_detail' product.warehouse.pk %}">Return to Previous Page</a>
     </div>
 
-    <form method="post">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-danger">Yes, delete this product</button>
-      <a href="{% url 'product_list' %}" class="btn btn-secondary">Cancel</a>
-    </form>
-  </div>
-{% endblock %}
+    <div class="container">
+        <h2>Are you sure you want to delete this product?</h2>
+        <p><strong>Product Name:</strong> {{ product.name }}</p>
+        <p><strong>Price:</strong> {{ product.price }}</p>
+        <p><strong>Stock Quantity:</strong> {{ product.stock_quantity }}</p>
+        
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit">Yes, delete</button>
+        </form>
+
+        <a href="{% url 'warehouse_detail' product.warehouse.pk %}" class="cancel-link">Cancel</a>
+    </div>
+</body>
+</html>

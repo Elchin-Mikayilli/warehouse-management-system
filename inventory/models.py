@@ -2,6 +2,7 @@ import uuid
 from django.db import models
 from django.contrib.auth.models import User
 
+
 # ✅ Warehouse model
 class Warehouse(models.Model):
     warehouse_code = models.UUIDField(
@@ -40,6 +41,10 @@ class Warehouse(models.Model):
     def __str__(self):
         return f"{self.name} (Owned by {self.user.username}, Status: {self.get_status_display()})"
 
+    # Method to check if the warehouse can be deleted
+    def can_be_deleted(self):
+        return not self.products.exists()  # Check if there are any related products
+
     class Meta:
         indexes = [
             models.Index(fields=['user']),
@@ -56,12 +61,12 @@ class Product(models.Model):
         default=uuid.uuid4,
         editable=False,
         unique=True
-    )  # Explicitly defining UUID as the primary key
+    )
     name = models.CharField(max_length=255)
     warehouse = models.ForeignKey(
         Warehouse,
         on_delete=models.CASCADE,
-        related_name='products'
+        related_name='products'  # Specify reverse relation for warehouse.products
     )
     price = models.DecimalField(max_digits=10, decimal_places=2)
     stock_quantity = models.PositiveIntegerField(default=0)
@@ -70,14 +75,14 @@ class Product(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name='products'
-    )  # Added User field to associate products with users
+    )
 
     def __str__(self):
         return f"{self.name} ({self.warehouse.name})"
 
     # Method to update stock
     def update_stock(self, quantity, action):
-        """Method to update stock quantity based on action."""
+        """Update stock quantity based on action."""
         if action == 'add':
             self.stock_quantity += quantity
         elif action == 'remove' and self.stock_quantity >= quantity:

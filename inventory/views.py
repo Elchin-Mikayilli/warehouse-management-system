@@ -7,9 +7,10 @@ from .models import Warehouse, Product, Stock
 from .forms import WarehouseForm, ProductForm, StockForm
 
 # View to list all warehouses with search functionality and pagination
+# View to list all warehouses with search functionality and pagination
 @login_required
 def warehouse_list(request):
-    # Filter warehouses by the logged-in user
+    # Fetch warehouses belonging to the logged-in user and order them by creation date
     warehouses = Warehouse.objects.filter(user=request.user).order_by('-created_at')
 
     # Search functionality
@@ -17,8 +18,12 @@ def warehouse_list(request):
     if search_query:
         warehouses = warehouses.filter(name__icontains=search_query)
 
+    # Add `has_products` to each warehouse
+    for warehouse in warehouses:
+        warehouse.has_products = warehouse.products.count() > 0
+
     # Pagination setup
-    paginator = Paginator(warehouses, 10)  # 10 warehouses per page
+    paginator = Paginator(warehouses, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -27,13 +32,14 @@ def warehouse_list(request):
         'search_query': search_query,
     })
 
+# View to create a new warehouse
 @login_required
 def warehouse_create(request):
     if request.method == 'POST':
-        form = WarehouseForm(request.POST, user=request.user)  # Pass the user to the form
+        form = WarehouseForm(request.POST, user=request.user)
         if form.is_valid():
             warehouse = form.save(commit=False)
-            warehouse.user = request.user  # Ensure the user is associated with the warehouse
+            warehouse.user = request.user
             warehouse.save()
             messages.success(request, f'You have successfully created the warehouse: {warehouse.name}')
             return redirect('warehouse_list')
@@ -47,7 +53,7 @@ def warehouse_create(request):
 # View to edit an existing warehouse
 @login_required
 def warehouse_edit(request, pk):
-    warehouse = get_object_or_404(Warehouse, pk=pk, user=request.user)  # Ensure the warehouse belongs to the user
+    warehouse = get_object_or_404(Warehouse, pk=pk, user=request.user)
     if request.method == 'POST':
         warehouse.name = request.POST.get('name')
         warehouse.location = request.POST.get('location')
@@ -61,15 +67,29 @@ def warehouse_edit(request, pk):
 # View to delete a warehouse
 @login_required
 def warehouse_delete(request, pk):
+    # Retrieve the warehouse and ensure it belongs to the current user
     warehouse = get_object_or_404(Warehouse, pk=pk, user=request.user)
 
+    # Check if the warehouse contains products
+    products_count = Product.objects.filter(warehouse=warehouse).count()
+
+    # Handle POST request for deletion confirmation
     if request.method == 'POST':
+        if products_count > 0:
+            # Show error if products exist and redirect back to warehouse deletion
+            messages.error(request, f"This warehouse contains {products_count} product(s). You cannot delete it until all products are removed.")
+            return redirect('warehouse_delete', pk=warehouse.pk)
+
+        # Delete the warehouse if no products exist
+        warehouse_name = warehouse.name
         warehouse.delete()
-        messages.success(request, f'Warehouse {warehouse.name} has been deleted successfully.')
+        messages.success(request, f'Warehouse "{warehouse_name}" has been deleted successfully.')
         return redirect('warehouse_list')
 
+    # Render the confirmation page with product count
     return render(request, 'inventory/warehouse_delete.html', {
-        'warehouse': warehouse
+        'warehouse': warehouse,
+        'products_count': products_count
     })
 
 # View to create a product and associate it with a warehouse
@@ -82,10 +102,9 @@ def product_create(request, pk):
         if form.is_valid():
             product = form.save(commit=False)
             product.warehouse = warehouse
-            product.user = request.user  # Assign user to product
+            product.user = request.user
             product.save()
 
-            # Handle initial stock if provided
             initial_stock = int(request.POST.get('initial_stock', 0))
             if initial_stock > 0:
                 Stock.objects.create(product=product, quantity_added=initial_stock)
@@ -183,7 +202,7 @@ def warehouse_detail(request, pk):
             except (ValueError, TypeError) as e:
                 # If there's an issue converting, add a message
                 messages.error(request, f'Invalid product ID: {e}')
-                return redirect('warehouse_detail', pk=warehouse.pk)
+                return redirect('warehouse_list', pk=warehouse.pk)
 
             # Fetch the product object using UUID
             product = get_object_or_404(Product, id=product_id, warehouse=warehouse)

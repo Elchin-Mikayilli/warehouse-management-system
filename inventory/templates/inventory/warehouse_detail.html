@@ -112,13 +112,12 @@
 </head>
 <body>
 
-    <!-- Buttons for logout and return to previous page -->
     <div class="button-row">
-        <button type="button" onclick="window.location.href='/logout/'">Logout</button> 
-        <span>/</span> 
-        <button type="button" onclick="window.history.back()">Return to Previous Page</button>
+        <!-- Logout redirects to login page -->
+        <a href="{% url 'logout' %}?next={% url 'login' %}">Logout</a>
+        <!-- Explicit link to warehouse_list view -->
+        <a href="{% url 'warehouse_list' %}">Return to Warehouse List</a>
     </div>
-
     <div class="container">
         <h1>{{ warehouse.name }} Details</h1>
         <p>Location: {{ warehouse.location }}</p>

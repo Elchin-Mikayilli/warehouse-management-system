@@ -1,6 +1,3 @@
-
-
-<!-- warehouse_delete.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -60,10 +57,34 @@
         .button-row a:hover {
             background-color: #0056b3;
         }
-        
+
         .error-message {
             color: red;
             font-size: 0.9em;
+            margin-top: 15px;
+        }
+        
+        .success-message {
+            color: green;
+            font-size: 1.1em;
+            margin-top: 15px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            font-size: 1em;
+        }
+
+        li.error {
+            color: red;
+        }
+
+        li.success {
+            color: green;
         }
     </style>
 </head>
@@ -72,16 +93,35 @@
     <!-- Container for content -->
     <div class="container">
         <h2>Are you sure you want to delete the warehouse: {{ warehouse.name }}?</h2>
-        <p>This action cannot be undone. Please confirm that you wish to delete this warehouse.</p>
-
-        <!-- Form to confirm deletion -->
-        <form method="POST">
-            {% csrf_token %}
+        
+        {% if products_count > 0 %}
+            <!-- Show warning if warehouse contains products -->
+            <p class="error-message">
+                This warehouse contains <strong>{{ products_count }}</strong> product(s). You cannot delete it until all products are removed.
+            </p>
             <div class="button-row">
-                <button type="submit">Yes, Delete</button>
-                <a href="{% url 'warehouse_list' %}">Cancel</a>
+                <a href="{% url 'warehouse_list' %}">Go Back</a>
             </div>
-        </form>
+        {% else %}
+            <!-- Allow deletion if no products are present -->
+            <p>This action cannot be undone. Please confirm that you wish to delete this warehouse.</p>
+            <form method="POST" action="{% url 'warehouse_delete' warehouse.pk %}">
+                {% csrf_token %}
+                <div class="button-row">
+                    <button type="submit">Yes, Delete</button>
+                    <a href="{% url 'warehouse_list' %}">Cancel</a>
+                </div>
+            </form>
+        {% endif %}
+
+        <!-- Display success or error messages if any -->
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
     </div>
 
 </body>
