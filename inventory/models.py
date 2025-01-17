@@ -5,14 +5,14 @@ from django.contrib.auth.models import User
 # ✅ Warehouse model
 class Warehouse(models.Model):
     warehouse_code = models.UUIDField(
-        primary_key=True, 
-        default=uuid.uuid4, 
-        editable=False, 
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
         unique=True
     )
     user = models.ForeignKey(
-        User, 
-        on_delete=models.CASCADE, 
+        User,
+        on_delete=models.CASCADE,
         related_name='warehouses'
     )
     name = models.CharField(max_length=255, unique=True)
@@ -49,20 +49,42 @@ class Warehouse(models.Model):
         verbose_name_plural = "Warehouses"
 
 
-# ✅ Product model
+# ✅ Product model with UUID id field
 class Product(models.Model):
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        unique=True
+    )  # Explicitly defining UUID as the primary key
     name = models.CharField(max_length=255)
     warehouse = models.ForeignKey(
-        Warehouse, 
-        on_delete=models.CASCADE, 
+        Warehouse,
+        on_delete=models.CASCADE,
         related_name='products'
     )
     price = models.DecimalField(max_digits=10, decimal_places=2)
     stock_quantity = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='products'
+    )  # Added User field to associate products with users
 
     def __str__(self):
         return f"{self.name} ({self.warehouse.name})"
+
+    # Method to update stock
+    def update_stock(self, quantity, action):
+        """Method to update stock quantity based on action."""
+        if action == 'add':
+            self.stock_quantity += quantity
+        elif action == 'remove' and self.stock_quantity >= quantity:
+            self.stock_quantity -= quantity
+        else:
+            raise ValueError("Invalid quantity or action.")
+        self.save()
 
     class Meta:
         unique_together = ('name', 'warehouse')
@@ -71,11 +93,11 @@ class Product(models.Model):
         ]
 
 
-# ✅ Stock model
+# ✅ Stock model to track movements
 class Stock(models.Model):
     product = models.ForeignKey(
-        Product, 
-        on_delete=models.CASCADE, 
+        Product,
+        on_delete=models.CASCADE,
         related_name='stocks'
     )
     quantity_added = models.PositiveIntegerField(default=0)
@@ -85,10 +107,13 @@ class Stock(models.Model):
     def __str__(self):
         return f"Stock movement for {self.product.name} on {self.date.strftime('%Y-%m-%d')}"
 
-    def total_stock(self):
-        """Calculates the total stock by considering added and removed quantities."""
-        total = self.quantity_added - self.quantity_removed
-        return total
+    def save(self, *args, **kwargs):
+        """Override save to update stock quantity for the product."""
+        if self.quantity_added > 0:
+            self.product.update_stock(self.quantity_added, 'add')
+        if self.quantity_removed > 0:
+            self.product.update_stock(self.quantity_removed, 'remove')
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Stock"

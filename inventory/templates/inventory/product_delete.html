@@ -1,0 +1,18 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+  <div class="container">
+    <h2>Delete Product</h2>
+
+    <!-- Confirmation message -->
+    <div class="alert alert-warning">
+      <p>Are you sure you want to delete the product <strong>{{ product.name }}</strong>?</p>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">Yes, delete this product</button>
+      <a href="{% url 'product_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+  </div>
+{% endblock %}

@@ -17,6 +17,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            position: relative;
         }
         .container {
             background-color: #ffffff;
@@ -117,10 +118,13 @@
 </head>
 <body>
 
+    <!-- Top Links (Logout and Back to Warehouse List) -->
     <div class="top-links">
         {% if user.is_authenticated %}
             <a href="{% url 'logout' %}" class="logout-link">Logout</a>
         {% endif %}
+        <span class="separator">/</span>
+        <a href="{% url 'warehouse_list' %}" class="back-link">Back to Warehouse List</a>
     </div>
 
     <div class="container">
@@ -193,7 +197,6 @@
             
             <div class="button-row">
                 <button type="submit">Create Warehouse</button>
-                <a href="{% url 'warehouse_list' %}" class="button-link">Back to Warehouse List</a>
             </div>
 
         </form>

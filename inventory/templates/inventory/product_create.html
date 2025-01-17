@@ -16,6 +16,7 @@
         }
 
         .container {
+            position: relative;
             text-align: center;
             width: 100%;
             max-width: 600px;
@@ -23,6 +24,29 @@
             background-color: #ffffff;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
+        }
+
+        .links {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .logout-link, .back-link {
+            text-decoration: none;
+            color: #007bff;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .logout-link:hover, .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .separator {
+            margin: 0 10px;
         }
 
         h2 {
@@ -56,74 +80,99 @@
             background-color: #0056b3;
         }
 
-        .back-link {
-            display: inline-block;
-            margin-top: 20px;
-            text-decoration: none;
-            color: #007bff;
-        }
-
-        .back-link:hover {
-            text-decoration: underline;
-        }
-
         .error {
             color: red;
             margin-top: 10px;
         }
 
-        .currency {
-            font-size: 0.9em;
-            color: #555;
+        .form-errors {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .errorlist {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .errorlist li {
+            margin-bottom: 5px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Create a New Product for Warehouse</h2>
+        <!-- Links (Logout and Return to Previous Page) -->
+        <div class="links">
+            <a href="{% url 'logout' %}" class="logout-link">Logout</a>
+            <span class="separator">/</span>
+            <a href="javascript:window.history.back()" class="back-link">Return to Previous Page</a>
+        </div>
 
-        <form method="POST">
+        <h2>Create a New Product for Warehouse: {{ warehouse.name }}</h2>
+
+        <!-- Check if there are any form-wide errors -->
+        {% if form.non_field_errors %}
+            <div class="form-errors">
+                <p><strong>There were some errors in the form:</strong></p>
+                <ul class="errorlist">
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <form method="POST" action="{% url 'product_create' pk=warehouse.pk %}">
             {% csrf_token %}
-            <input type="hidden" name="warehouse_id" value="{{ warehouse.id }}">
+            <input type="hidden" name="warehouse_id" value="{{ warehouse.id|stringformat:'s' }}">
 
-            <label for="name">Product Name:</label>
-            <input type="text" id="name" name="name" value="{{ form.name.value }}" required>
 
-            {% if form.name.errors %}
-                <div class="error">
-                    {% for error in form.name.errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
+            <!-- Product Name -->
+            <div>
+                <label for="id_name">Product Name:</label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                    <div class="error">
+                        {% for error in form.name.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
 
-            <label for="price">Price (in {{ currency_symbol }}):</label>
-            <input type="number" id="price" name="price" value="{{ form.price.value }}" step="0.01" required>
+            <!-- Product Price -->
+            <div>
+                <label for="id_price">Product Price (manat):</label>
+                {{ form.price }}
+                {% if form.price.errors %}
+                    <div class="error">
+                        {% for error in form.price.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
 
-            {% if form.price.errors %}
-                <div class="error">
-                    {% for error in form.price.errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-            <span class="currency">{{ currency_symbol }}: Enter the product price.</span>
+            <!-- Stock Quantity -->
+            <div>
+                <label for="id_stock_quantity">Product Stock Quantity:</label>
+                {{ form.stock_quantity }}
+                {% if form.stock_quantity.errors %}
+                    <div class="error">
+                        {% for error in form.stock_quantity.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
 
-            <label for="stock_quantity">Stock Quantity:</label>
-            <input type="number" id="stock_quantity" name="stock_quantity" value="{{ form.stock_quantity.value }}" required>
-
-            {% if form.stock_quantity.errors %}
-                <div class="error">
-                    {% for error in form.stock_quantity.errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-
+            <!-- Submit Button -->
             <button type="submit">Save Product</button>
         </form>
-
-        <a href="{% url 'warehouse_detail' warehouse.pk %}" class="back-link">Back to Warehouse Details</a>
     </div>
 </body>
 </html>
