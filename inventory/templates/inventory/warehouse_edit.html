@@ -20,7 +20,7 @@
         .container {
             text-align: center;
             width: 100%;
-            max-width: 1200px; /* Increased width */
+            max-width: 1200px;
             padding: 30px;
             background-color: #ffffff;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -33,13 +33,15 @@
             position: absolute;
             top: 20px;
             right: 20px;
-            font-size: 16px;
+            font-size: 14px; /* Reduced font size */
+            display: inline-flex; /* Links on the same line */
+            gap: 10px; /* Space between links */
+            align-items: center;
         }
 
         .top-links a {
             color: #007bff;
             text-decoration: none;
-            margin-left: 10px;
         }
 
         .top-links a:hover {
@@ -47,8 +49,8 @@
         }
 
         .separator {
-            margin-left: 10px;
-            margin-right: 10px;
+            color: #555;
+            font-size: 14px; /* Match font size of links */
         }
 
         /* Heading */
@@ -109,19 +111,6 @@
             color: #d9534f;
             font-size: 14px;
             margin-top: 5px;
-        }
-
-        /* Back to warehouse list link */
-        .back-link {
-            display: block;
-            margin-top: 20px;
-            font-size: 18px;
-            color: #28a745;
-            text-decoration: none;
-        }
-
-        .back-link:hover {
-            text-decoration: underline;
         }
     </style>
 </head>
@@ -195,7 +184,6 @@
             <!-- Submit Button -->
             <button type="submit">Save Changes</button>
         </form>
-
     </div>
 </body>
 </html>

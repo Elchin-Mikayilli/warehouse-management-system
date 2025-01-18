@@ -39,10 +39,11 @@
             background-color: #007bff;
             color: white;
             text-decoration: none;
-            padding: 10px 15px;
-            margin-right: 10px;
-            border-radius: 5px;
-            font-size: 16px;
+            padding: 5px 8px;
+            margin-right: 5px;
+            border-radius: 4px;
+            font-size: 12px;
+            display: inline-block;
         }
 
         .button-row a:hover {
@@ -50,8 +51,10 @@
         }
 
         .button-row span {
-            font-size: 18px;
-            color: #333;
+            font-size: 12px;
+            color: 555;
+            margin: 0 5px;
+            display: inline;
         }
 
         table {
@@ -111,10 +114,10 @@
 
     <div class="container">
         <div class="button-row">
-            <!-- Logout and Return to Warehouse List Links with '/' sign in between -->
+            <!-- Logout and Return to Previous Page Links with '/' sign in between -->
             <a href="{% url 'logout' %}?next={% url 'login' %}">Logout</a>
             <span>/</span>
-            <a href="{% url 'warehouse_list' %}">Return to Warehouse List</a>
+            <a href="{% url 'warehouse_list' %}"> Back to Warehouse List </a>
         </div>
 
         <h1>{{ warehouse.name }} Details</h1>
