@@ -7,10 +7,10 @@
     <style>
         /* General layout styles */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            background-color: #f8f9fa;
         }
 
         .container {
@@ -19,27 +19,39 @@
             background-color: white;
             padding: 20px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
             margin-top: 20px;
         }
 
-        h1, h2 {
+        h1 {
             color: #333;
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-align: center;
         }
 
         .button-row {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+            text-align: right;
+            margin-bottom: 20px;
         }
 
-        .button-row button {
+        .button-row a {
             background-color: #007bff;
             color: white;
-            border: none;
+            text-decoration: none;
             padding: 10px 15px;
-            margin: 5px;
-            cursor: pointer;
+            margin-right: 10px;
             border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .button-row a:hover {
+            background-color: #0056b3;
+        }
+
+        .button-row span {
+            font-size: 18px;
+            color: #333;
         }
 
         table {
@@ -63,6 +75,7 @@
             color: #888;
             font-size: 1.2em;
             margin-top: 20px;
+            text-align: center;
         }
 
         .form-container {
@@ -92,33 +105,18 @@
         .form-container button:hover {
             background-color: #218838;
         }
-
-        .stock-log-table {
-            margin-top: 30px;
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .stock-log-table th, .stock-log-table td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-
-        .stock-log-table th {
-            background-color: #f4f4f4;
-        }
     </style>
 </head>
 <body>
 
-    <div class="button-row">
-        <!-- Logout redirects to login page -->
-        <a href="{% url 'logout' %}?next={% url 'login' %}">Logout</a>
-        <!-- Explicit link to warehouse_list view -->
-        <a href="{% url 'warehouse_list' %}">Return to Warehouse List</a>
-    </div>
     <div class="container">
+        <div class="button-row">
+            <!-- Logout and Return to Warehouse List Links with '/' sign in between -->
+            <a href="{% url 'logout' %}?next={% url 'login' %}">Logout</a>
+            <span>/</span>
+            <a href="{% url 'warehouse_list' %}">Return to Warehouse List</a>
+        </div>
+
         <h1>{{ warehouse.name }} Details</h1>
         <p>Location: {{ warehouse.location }}</p>
         <p>Status: {{ warehouse.get_status_display }}</p>
@@ -152,35 +150,9 @@
                 </tbody>
             </table>
         {% else %}
-            <p class="no-products">No products found in this warehouse.</p>
+            <p class="no-products">No products available in this warehouse.</p>
         {% endif %}
 
-        <!-- Stock Movement Logs -->
-        <h2>Stock Movement Logs</h2>
-        {% if warehouse.stocks.all %}
-            <table class="stock-log-table">
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Quantity Added</th>
-                        <th>Quantity Removed</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for log in warehouse.stocks.all %}
-                        <tr>
-                            <td>{{ log.product.name }}</td>
-                            <td>{{ log.quantity_added }}</td>
-                            <td>{{ log.quantity_removed }}</td>
-                            <td>{{ log.date }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <p>No stock movement logs found.</p>
-        {% endif %}
     </div>
 
 </body>

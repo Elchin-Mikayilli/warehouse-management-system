@@ -1,87 +1,153 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Product</title>
     <style>
+        /* General layout styles */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
+            background-color: #f8f9fa;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
-            background-color: #f4f4f9;
         }
+
+        /* Top bar containing logout and return link */
         .top-bar {
             position: absolute;
             top: 0;
-            left: 0;
-            width: 100%;
-            background-color: #add8e6; /* Light blue */
-            color: white;
+            right: 0;
             padding: 10px 20px;
+            background-color: #007bff; /* Blue background for the top bar */
+            color: white;
             display: flex;
             justify-content: flex-end;
+            width: 100%;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         .top-bar a {
-            color: #0056b3; /* Dark blue for links */
+            color: white;
             text-decoration: none;
+            font-size: 16px;
             margin-left: 15px;
             font-weight: bold;
         }
+
         .top-bar a:hover {
             text-decoration: underline;
         }
+
+        .top-bar span {
+            color: white;
+            margin-left: 5px;
+            font-size: 18px;
+        }
+
+        /* Container for the form */
         .container {
-            text-align: center;
-            background: white;
+            background-color: white;
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            width: 500px; /* Increased width */
+            width: 500px;
+            text-align: left;
         }
+
+        h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
         form {
             margin-top: 15px;
         }
+
+        form label {
+            font-size: 16px;
+            margin-bottom: 8px;
+            display: block;
+            color: #333;
+        }
+
+        form input,
+        form select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
         button {
-            padding: 10px 20px;
+            padding: 12px 20px;
             background-color: #007bff;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 20px;
         }
+
         button:hover {
             background-color: #0056b3;
         }
-        a {
+
+        .cancel-link {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .cancel-link a {
+            font-size: 16px;
             color: #007bff;
             text-decoration: none;
         }
-        a:hover {
+
+        .cancel-link a:hover {
             text-decoration: underline;
         }
+
     </style>
 </head>
 <body>
+
+    <!-- Top Bar with logout and return links -->
     <div class="top-bar">
         <a href="{% url 'logout' %}">Logout</a>
+        <span>/</span>
         <a href="{% url 'warehouse_detail' product.warehouse.pk %}">Return to Previous Page</a>
     </div>
 
+    <!-- Form container for editing the product -->
     <div class="container">
         <h2>Edit Product</h2>
+
+        <!-- Product edit form -->
         <form method="POST">
             {% csrf_token %}
-            {{ form.as_p }}
+            {{ form.as_p }} <!-- Render form fields as paragraphs -->
+
+            <!-- Save changes button -->
             <button type="submit">Save changes</button>
         </form>
 
-        <br>
-        <a href="{% url 'warehouse_detail' product.warehouse.pk %}">Cancel</a>
+        <!-- Cancel link -->
+        <div class="cancel-link">
+            <a href="{% url 'warehouse_detail' product.warehouse.pk %}">Cancel</a>
+        </div>
     </div>
+
 </body>
 </html>

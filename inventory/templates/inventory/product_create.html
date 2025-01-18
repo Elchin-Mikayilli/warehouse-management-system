@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Product</title>
     <style>
+        /* General layout styles */
         body {
             display: flex;
             justify-content: center;
@@ -12,18 +13,24 @@
             min-height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            background-color: #f9f9f9;
         }
 
         .container {
             position: relative;
-            text-align: center;
+            text-align: left;
             width: 100%;
             max-width: 600px;
-            padding: 20px;
+            padding: 25px;
             background-color: #ffffff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #333;
         }
 
         .links {
@@ -37,7 +44,7 @@
         .logout-link, .back-link {
             text-decoration: none;
             color: #007bff;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
         }
 
@@ -49,46 +56,50 @@
             margin: 0 10px;
         }
 
-        h2 {
-            margin-bottom: 20px;
-        }
-
-        form {
-            margin-bottom: 20px;
-            text-align: left;
+        /* Form input styles */
+        label {
+            font-size: 1rem;
+            margin-bottom: 5px;
+            color: #555;
+            display: block;
         }
 
         input[type="text"], input[type="number"], input[type="hidden"] {
-            padding: 8px;
+            padding: 10px;
             width: 100%;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
             border-radius: 4px;
             border: 1px solid #ccc;
+            box-sizing: border-box;
+            font-size: 1rem;
         }
 
         button {
-            padding: 10px 15px;
-            background-color: #007bff;
+            padding: 12px;
+            background-color: #3498db;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             width: 100%;
+            font-size: 1.1rem;
+            transition: background-color 0.3s;
         }
 
         button:hover {
-            background-color: #0056b3;
+            background-color: #2980b9;
         }
 
         .error {
             color: red;
-            margin-top: 10px;
+            margin-top: 5px;
+            font-size: 0.9rem;
         }
 
         .form-errors {
             background-color: #f8d7da;
             color: #721c24;
-            padding: 10px;
+            padding: 12px;
             margin-bottom: 20px;
             border-radius: 5px;
         }
@@ -96,10 +107,27 @@
         .errorlist {
             list-style-type: none;
             padding-left: 0;
+            margin-top: 10px;
         }
 
         .errorlist li {
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+        }
+
+        .errorlist li {
+            font-size: 0.9rem;
+        }
+
+        /* Responsive adjustments */
+        @media screen and (max-width: 768px) {
+            .container {
+                width: 90%;
+                padding: 15px;
+            }
+
+            h2 {
+                font-size: 1.6rem;
+            }
         }
     </style>
 </head>
@@ -117,7 +145,7 @@
         <!-- Check if there are any form-wide errors -->
         {% if form.non_field_errors %}
             <div class="form-errors">
-                <p><strong>There were some errors in the form:</strong></p>
+                <p><strong>There were some issues with the form:</strong></p>
                 <ul class="errorlist">
                     {% for error in form.non_field_errors %}
                         <li>{{ error }}</li>
@@ -126,10 +154,10 @@
             </div>
         {% endif %}
 
+        <!-- Product Creation Form -->
         <form method="POST" action="{% url 'product_create' pk=warehouse.pk %}">
             {% csrf_token %}
             <input type="hidden" name="warehouse_id" value="{{ warehouse.id|stringformat:'s' }}">
-
 
             <!-- Product Name -->
             <div>

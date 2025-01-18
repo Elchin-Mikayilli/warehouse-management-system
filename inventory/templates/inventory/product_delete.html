@@ -1,92 +1,143 @@
-
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Delete Product</title>
     <style>
+        /* General layout styles */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
+            background-color: #f8f9fa;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
-            background-color: #f4f4f9;
         }
+
+        /* Top bar containing logout and return link */
         .top-bar {
             position: absolute;
             top: 0;
-            left: 0;
-            width: 100%;
-            background-color: #add8e6; /* Light blue */
-            color: white;
+            right: 0;
             padding: 10px 20px;
+            background-color: #007bff; /* Blue background for the top bar */
+            color: white;
             display: flex;
             justify-content: flex-end;
+            width: 100%;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         .top-bar a {
-            color: #0056b3; /* Dark blue for links */
+            color: white;
             text-decoration: none;
+            font-size: 16px;
             margin-left: 15px;
             font-weight: bold;
         }
+
         .top-bar a:hover {
             text-decoration: underline;
         }
+
+        .top-bar span {
+            color: white;
+            margin-left: 5px;
+            font-size: 18px;
+        }
+
+        /* Container for the delete confirmation */
         .container {
-            text-align: center;
-            background: white;
+            background-color: white;
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            width: 500px; /* Increased width */
+            width: 500px;
+            text-align: left;
         }
+
+        h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        p {
+            font-size: 16px;
+            margin: 10px 0;
+            color: #333;
+        }
+
+        strong {
+            font-weight: bold;
+        }
+
         button {
-            padding: 10px 20px;
+            padding: 12px 20px;
             background-color: #d9534f;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 20px;
         }
+
         button:hover {
             background-color: #c9302c;
         }
-        a {
+
+        .cancel-link {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .cancel-link a {
+            font-size: 16px;
             color: #007bff;
             text-decoration: none;
         }
-        a:hover {
+
+        .cancel-link a:hover {
             text-decoration: underline;
         }
-        .cancel-link {
-            display: inline-block;
-            margin-top: 15px;
-        }
+
     </style>
 </head>
 <body>
+
+    <!-- Top Bar with logout and return links -->
     <div class="top-bar">
         <a href="{% url 'logout' %}">Logout</a>
+        <span>/</span>
         <a href="{% url 'warehouse_detail' product.warehouse.pk %}">Return to Previous Page</a>
     </div>
 
+    <!-- Delete product confirmation container -->
     <div class="container">
         <h2>Are you sure you want to delete this product?</h2>
+
         <p><strong>Product Name:</strong> {{ product.name }}</p>
         <p><strong>Price:</strong> {{ product.price }}</p>
         <p><strong>Stock Quantity:</strong> {{ product.stock_quantity }}</p>
-        
+
+        <!-- Form to confirm deletion -->
         <form method="POST">
             {% csrf_token %}
             <button type="submit">Yes, delete</button>
         </form>
 
-        <a href="{% url 'warehouse_detail' product.warehouse.pk %}" class="cancel-link">Cancel</a>
+        <!-- Cancel link -->
+        <div class="cancel-link">
+            <a href="{% url 'warehouse_detail' product.warehouse.pk %}">Cancel</a>
+        </div>
     </div>
+
 </body>
 </html>

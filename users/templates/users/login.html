@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="d-flex justify-content-center align-items-center" style="height: 50vh;">
-    <div class="container" style="max-width: 400px; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-        <h2 class="text-center mb-4">Login</h2>
+<div class="d-flex justify-content-center align-items-center" style="min-height: 40vh; background: #f5f5f5; font-family: 'Roboto', sans-serif;">
+    <div class="container" style="max-width: 400px; padding: 20px; background-color: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+        <h2 class="text-center mb-4" style="font-size: 2.5rem; color: #333;">Login</h2>
 
         <!-- Error handling block for form errors -->
         {% if form.errors %}
-            <div class="alert alert-danger">
+            <div class="alert alert-danger" role="alert" style="border-radius: 8px; padding: 10px; background-color: #f8d7da; color: #721c24;">
                 {% for field in form %}
                     {% for error in field.errors %}
                         <p>{{ error }}</p>
@@ -19,18 +19,56 @@
         <form method="post">
             {% csrf_token %}
             
-            <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input type="text" name="username" id="username" class="form-control" required>
+            <div class="mb-4">
+                <label for="username" class="form-label" style="font-weight: 500; color: #555;">Username</label>
+                <input type="text" name="username" id="username" class="form-control form-control-lg" required style="border-radius: 12px; padding: 12px 15px; font-size: 1.1rem;">
             </div>
             
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" name="password" id="password" class="form-control" required>
+            <div class="mb-4">
+                <label for="password" class="form-label" style="font-weight: 500; color: #555;">Password</label>
+                <input type="password" name="password" id="password" class="form-control form-control-lg" required style="border-radius: 12px; padding: 12px 15px; font-size: 1.1rem;">
             </div>
 
-            <button type="submit" class="btn btn-primary w-100">Login</button>
+            <button type="submit" class="btn btn-primary w-100" style="font-size: 1.2rem; padding: 12px; border-radius: 12px; background-color: #007bff; border: none; transition: background-color 0.3s ease;">
+                Login
+            </button>
         </form>
+
+        <!-- Register Link -->
+        <div class="mt-4 text-center">
+            <p style="color: #555;">Don't have an account? <a href="{% url 'register' %}" style="color: #007bff;">Register here</a></p>
+        </div>
     </div>
 </div>
+
+<style>
+    /* Background gradient or subtle image with slight blur */
+    body {
+        background: linear-gradient(to right, #e0e0e0, #f5f5f5);
+        background-size: cover;
+        background-position: center;
+        backdrop-filter: blur(10px);
+    }
+
+    /* Button hover effect */
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    /* Responsiveness for mobile */
+    @media (max-width: 576px) {
+        .container {
+            padding: 15px;
+        }
+
+        h2 {
+            font-size: 2rem;
+        }
+
+        .form-control, .btn {
+            font-size: 1rem;
+        }
+    }
+</style>
+
 {% endblock %}

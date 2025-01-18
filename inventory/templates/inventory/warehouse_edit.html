@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Warehouse</title>
     <style>
+        /* General body styles */
         body {
             display: flex;
             justify-content: center;
@@ -15,120 +16,186 @@
             background-color: #f4f4f9;
         }
 
+        /* Main container */
         .container {
             text-align: center;
             width: 100%;
-            max-width: 900px;
-            padding: 20px;
+            max-width: 1200px; /* Increased width */
+            padding: 30px;
             background-color: #ffffff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             position: relative;
         }
 
-        .logout-link {
+        /* Top links (Logout and Back to Warehouse List) */
+        .top-links {
             position: absolute;
             top: 20px;
             right: 20px;
-            color: #007bff;
-            text-decoration: none;
             font-size: 16px;
         }
 
-        .logout-link:hover {
+        .top-links a {
+            color: #007bff;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+
+        .top-links a:hover {
             text-decoration: underline;
         }
 
-        h2 {
-            margin-bottom: 20px;
+        .separator {
+            margin-left: 10px;
+            margin-right: 10px;
         }
 
+        /* Heading */
+        h2 {
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 28px;
+        }
+
+        /* Form container */
         form {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 20px;
+            margin-bottom: 30px;
         }
 
+        /* Label styling */
         label {
             font-weight: bold;
             text-align: left;
+            font-size: 18px;
+            color: #555;
         }
 
+        /* Input and select field styling */
         input[type="text"], select {
-            padding: 10px;
+            padding: 12px;
             width: 100%;
-            border-radius: 4px;
+            border-radius: 6px;
             border: 1px solid #ccc;
+            font-size: 16px;
+            color: #333;
         }
 
+        input[type="text"]:focus, select:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        /* Button styling */
         button {
-            padding: 10px;
+            padding: 12px;
             background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
+            font-size: 18px;
         }
 
         button:hover {
             background-color: #0056b3;
         }
 
-        a {
-            display: inline-block;
-            margin-top: 20px;
-            color: #007bff;
-            text-decoration: none;
+        /* Error message styling */
+        .error {
+            color: #d9534f;
+            font-size: 14px;
+            margin-top: 5px;
         }
 
-        a:hover {
-            text-decoration: underline;
-        }
-
-        .status-dropdown {
-            text-align: left;
-        }
-
+        /* Back to warehouse list link */
         .back-link {
             display: block;
             margin-top: 20px;
-            font-weight: bold;
+            font-size: 18px;
             color: #28a745;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Logout Link -->
-        {% if user.is_authenticated %}
-            <a href="{% url 'logout' %}" class="logout-link">Logout</a>
-        {% endif %}
+        <!-- Top Links (Logout and Back to Warehouse List) -->
+        <div class="top-links">
+            {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}" class="logout-link">Logout</a>
+            {% endif %}
+            <span class="separator">/</span>
+            <a href="{% url 'warehouse_list' %}" class="back-link">Back to Warehouse List</a>
+        </div>
 
+        <!-- Heading -->
         <h2>Edit Warehouse</h2>
 
         <!-- Warehouse Edit Form -->
-        <form method="post">
+        <form method="POST">
             {% csrf_token %}
 
-            <label for="name">Warehouse Name:</label>
-            <input type="text" id="name" name="name" value="{{ warehouse.name }}" placeholder="Enter warehouse name" required>
+            <!-- Warehouse Name input -->
+            <div class="form-row">
+                <label for="name">Warehouse Name:</label>
+                <input type="text" id="name" name="name" value="{{ warehouse.name }}" placeholder="Enter warehouse name" required>
+                {% if form.name.errors %}
+                    <div class="error">
+                        <ul>
+                            {% for error in form.name.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
 
-            <label for="location">Location:</label>
-            <input type="text" id="location" name="location" value="{{ warehouse.location }}" placeholder="Enter warehouse location" required>
+            <!-- Location input -->
+            <div class="form-row">
+                <label for="location">Location:</label>
+                <input type="text" id="location" name="location" value="{{ warehouse.location }}" placeholder="Enter warehouse location" required>
+                {% if form.location.errors %}
+                    <div class="error">
+                        <ul>
+                            {% for error in form.location.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
 
-            <label for="status" class="status-dropdown">Status:</label>
-            <select id="status" name="status" required>
-                <option value="active" {% if warehouse.status == 'active' %}selected{% endif %}>Active</option>
-                <option value="maintenance" {% if warehouse.status == 'maintenance' %}selected{% endif %}>Maintenance</option>
-                <option value="closed" {% if warehouse.status == 'closed' %}selected{% endif %}>Closed</option>
-            </select>
+            <!-- Status select -->
+            <div class="form-row">
+                <label for="status">Status:</label>
+                <select name="status" id="status" required>
+                    <option value="active" {% if warehouse.status == 'active' %}selected{% endif %}>Active</option>
+                    <option value="maintenance" {% if warehouse.status == 'maintenance' %}selected{% endif %}>Maintenance</option>
+                    <option value="closed" {% if warehouse.status == 'closed' %}selected{% endif %}>Closed</option>
+                </select>
+                {% if form.status.errors %}
+                    <div class="error">
+                        <ul>
+                            {% for error in form.status.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
 
+            <!-- Submit Button -->
             <button type="submit">Save Changes</button>
         </form>
 
-        <!-- Back to Warehouse List Link -->
-        <a href="{% url 'warehouse_list' %}" class="back-link">Back to Warehouse List</a>
     </div>
 </body>
 </html>
